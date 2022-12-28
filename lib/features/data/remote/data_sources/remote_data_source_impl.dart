@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -12,30 +11,31 @@ import 'package:instagram_clone/features/domain/entities/user/user_entity.dart';
 import 'package:uuid/uuid.dart';
 
 class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
-  final FirebaseAuth auth;
-  final FirebaseFirestore firebaseFirestore;
+  final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firebaseFireStore;
   final FirebaseStorage firebaseStorage;
 
-  FirebaseRemoteDataSourceImpl({required this.firebaseStorage, required this.firebaseFirestore, required this.auth});
+  FirebaseRemoteDataSourceImpl({required this.firebaseStorage, required this.firebaseFireStore, required this.firebaseAuth});
 
   Future<void> createUserWithImage(UserEntity user, String profileUrl) async {
-    final userCollection = firebaseFirestore.collection(FirebaseConst.users);
+    final userCollection = firebaseFireStore.collection(FirebaseConst.users);
+
     final uid = await getCurrentUid();
 
     userCollection.doc(uid).get().then((userDoc) {
       final newUser = UserModel(
-        uid: uid,
-        name: user.name,
-        email: user.email,
-        bio: user.bio,
-        following: user.following,
-        website: user.website,
-        profileUrl: profileUrl,
-        username: user.username,
-        totalFollowing: user.totalFollowing,
-        totalFollowers: user.totalFollowers,
-        followers: user.followers,
-        totalPosts: user.totalPosts,
+          uid: uid,
+          name: user.name,
+          email: user.email,
+          bio: user.bio,
+          following: user.following,
+          website: user.website,
+          profileUrl: profileUrl,
+          username: user.username,
+          totalFollowers: user.totalFollowers,
+          followers: user.followers,
+          totalFollowing: user.totalFollowing,
+          totalPosts: user.totalPosts
       ).toJson();
 
       if (!userDoc.exists) {
@@ -50,23 +50,24 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<void> createUser(UserEntity user) async {
-    final userCollection = firebaseFirestore.collection(FirebaseConst.users);
+    final userCollection = firebaseFireStore.collection(FirebaseConst.users);
+
     final uid = await getCurrentUid();
 
     userCollection.doc(uid).get().then((userDoc) {
       final newUser = UserModel(
-        uid: uid,
-        name: user.name,
-        email: user.email,
-        bio: user.bio,
-        following: user.following,
-        website: user.website,
-        profileUrl: user.profileUrl,
-        username: user.username,
-        totalFollowing: user.totalFollowing,
-        totalFollowers: user.totalFollowers,
-        followers: user.followers,
-        totalPosts: user.totalPosts,
+          uid: uid,
+          name: user.name,
+          email: user.email,
+          bio: user.bio,
+          following: user.following,
+          website: user.website,
+          profileUrl: user.profileUrl,
+          username: user.username,
+          totalFollowers: user.totalFollowers,
+          followers: user.followers,
+          totalFollowing: user.totalFollowing,
+          totalPosts: user.totalPosts
       ).toJson();
 
       if (!userDoc.exists) {
@@ -80,56 +81,57 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   }
 
   @override
-  Future<String> getCurrentUid() async => auth.currentUser!.uid;
+  Future<String> getCurrentUid() async => firebaseAuth.currentUser!.uid;
+
 
   @override
   Stream<List<UserEntity>> getSingleUsers(String uid) {
-    final userCollection = firebaseFirestore.collection(FirebaseConst.users).where("uid", isEqualTo: uid).limit(1);
-    return userCollection.snapshots().map(
-          (querySnapshot) => querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList(),
-        );
+    final userCollection = firebaseFireStore.collection(FirebaseConst.users).where("uid", isEqualTo: uid).limit(1);
+    return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
   }
 
   @override
   Stream<List<UserEntity>> getUsers(UserEntity user) {
-    final userCollection = firebaseFirestore.collection(FirebaseConst.users);
-    return userCollection.snapshots().map(
-          (querySnapshot) => querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList(),
-        );
+    final userCollection = firebaseFireStore.collection(FirebaseConst.users);
+    return userCollection.snapshots().map((querySnapshot) => querySnapshot.docs.map((e) => UserModel.fromSnapshot(e)).toList());
   }
 
   @override
-  Future<bool> isSignIn() async => auth.currentUser?.uid != null;
+  Future<bool> isSignIn() async => firebaseAuth.currentUser?.uid != null;
 
   @override
-  Future<void> signInUser(UserEntity user) async {
-    try {
-      if (user.email!.isNotEmpty || user.password!.isNotEmpty) {
-        await auth.signInWithEmailAndPassword(email: user.email!, password: user.password!);
-      } else {
-        print("fields cannot be empty");
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == "user-not-found") {
-        toast("user not found");
-      } else if (e.code == "wrong-password") {
-        toast("Invalid email or password");
-      }
-    }
+  Future<void> signInUser(UserEntity user)async {
+
+    await firebaseAuth.signInWithEmailAndPassword(email: user.email!, password: user.password!);
+    // try {
+    //   if (user.email!.isNotEmpty || user.password!.isNotEmpty) {
+    //     await firebaseAuth.signInWithEmailAndPassword(email: user.email!, password: user.password!);
+    //   } else {
+    //     print("fields cannot be empty");
+    //   }
+    // } on FirebaseAuthException catch (e) {
+    //   if (e.code == "user-not-found") {
+    //     toast("user not found");
+    //   } else if (e.code == "wrong-password") {
+    //     toast("Invalid email or password");
+    //   }
+    // }
   }
 
   @override
   Future<void> signOut() async {
-    await auth.signOut();
+    await firebaseAuth.signOut();
   }
 
   @override
   Future<void> signUpUser(UserEntity user) async {
     try {
-      await auth.createUserWithEmailAndPassword(email: user.email!, password: user.password!).then((currentUser) async {
+      await firebaseAuth.createUserWithEmailAndPassword(email: user.email!, password: user.password!).then((currentUser) async{
         if (currentUser.user?.uid != null) {
           if (user.imageFile != null) {
-            uploadImageToCloudStorage(user.imageFile, false, 'profileImages').then((profileUrl) => {createUserWithImage(user, profileUrl)});
+            uploadImageToCloudStorage(user.imageFile, false, "profileImages").then((profileUrl) {
+              createUserWithImage(user, profileUrl);
+            });
           } else {
             createUserWithImage(user, "");
           }
@@ -137,26 +139,26 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       });
       return;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'email-already-used') {
+      if (e.code == "email-already-in-use") {
         toast("email is already taken");
       } else {
-        toast("Some went Wrong");
+        toast("something went wrong");
       }
     }
   }
 
   @override
   Future<void> updateUser(UserEntity user) async {
-    final userCollection = firebaseFirestore.collection(FirebaseConst.users);
+    final userCollection = firebaseFireStore.collection(FirebaseConst.users);
     Map<String, dynamic> userInformation = Map();
 
     if (user.username != "" && user.username != null) userInformation['username'] = user.username;
 
     if (user.website != "" && user.website != null) userInformation['website'] = user.website;
 
-    if (user.bio != "" && user.bio != null) userInformation['bio'] = user.bio;
-
     if (user.profileUrl != "" && user.profileUrl != null) userInformation['profileUrl'] = user.profileUrl;
+
+    if (user.bio != "" && user.bio != null) userInformation['bio'] = user.bio;
 
     if (user.name != "" && user.name != null) userInformation['name'] = user.name;
 
@@ -166,12 +168,13 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
     if (user.totalPosts != null) userInformation['totalPosts'] = user.totalPosts;
 
-    userCollection.doc(user.uid).update(userInformation);
-  }
 
+    userCollection.doc(user.uid).update(userInformation);
+
+  }
   @override
   Future<String> uploadImageToCloudStorage(File? file, bool isPost, String? childName) async {
-    Reference ref = firebaseStorage.ref().child(childName!).child(auth.currentUser!.uid);
+    Reference ref = firebaseStorage.ref().child(childName!).child(firebaseAuth.currentUser!.uid);
 
     if (isPost) {
       String id = Uuid().v1();
@@ -185,7 +188,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<void> createPost(PostEntity post) async {
-    final postCollection = firebaseFirestore.collection(FirebaseConst.posts);
+    final postCollection = firebaseFireStore.collection(FirebaseConst.posts);
 
     final newPost = PostModel(
       userProfileUrl: post.userProfileUrl,
@@ -213,7 +216,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<void> deletePost(PostEntity post) async {
-    final postCollection = firebaseFirestore.collection(FirebaseConst.posts);
+    final postCollection = firebaseFireStore.collection(FirebaseConst.posts);
 
     try {
       postCollection.doc(post.postId).delete();
@@ -224,7 +227,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<void> likePost(PostEntity post) async {
-    final postCollection = firebaseFirestore.collection(FirebaseConst.posts);
+    final postCollection = firebaseFireStore.collection(FirebaseConst.posts);
 
     final currentUid = await getCurrentUid();
     final postRef = await postCollection.doc(post.postId).get();
@@ -248,13 +251,13 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Stream<List<PostEntity>> readPosts(PostEntity post) {
-    final postCollection = firebaseFirestore.collection(FirebaseConst.posts).orderBy("createAt", descending: true);
+    final postCollection = firebaseFireStore.collection(FirebaseConst.posts).orderBy("createAt", descending: true);
     return postCollection.snapshots().map((querySnapshot) => querySnapshot.docs.map((e) => PostModel.fromSnapshot(e)).toList());
   }
 
   @override
   Future<void> updatePost(PostEntity post) async {
-    final postCollection = firebaseFirestore.collection(FirebaseConst.posts);
+    final postCollection = firebaseFireStore.collection(FirebaseConst.posts);
     Map<String, dynamic> postInfo = Map();
 
     if (post.description == "" && post.description != null) postInfo['description'] = post.description;
@@ -262,4 +265,6 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
     postCollection.doc(post.postId).update(postInfo);
   }
+
+
 }

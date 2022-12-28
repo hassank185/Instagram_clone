@@ -1,22 +1,25 @@
 import 'package:equatable/equatable.dart';
 import 'dart:io';
 
+
 class UserEntity extends Equatable {
   final String? uid;
-  final String? email;
   final String? username;
   final String? name;
   final String? bio;
   final String? website;
-  final num? totalPosts;
+  final String? email;
   final String? profileUrl;
   final List? followers;
   final List? following;
   final num? totalFollowers;
   final num? totalFollowing;
+  final num? totalPosts;
+
+  // will not going to store in DB
+  final File? imageFile;
   final String? password;
   final String? otherUid;
-  final File? imageFile;
 
   UserEntity({
     this.imageFile,
@@ -25,6 +28,7 @@ class UserEntity extends Equatable {
     this.name,
     this.bio,
     this.website,
+    this.email,
     this.profileUrl,
     this.followers,
     this.following,
@@ -32,26 +36,25 @@ class UserEntity extends Equatable {
     this.totalFollowing,
     this.password,
     this.otherUid,
-    this.email,
     this.totalPosts,
   });
 
   @override
   List<Object?> get props => [
-        uid,
-        username,
-        name,
-        bio,
-        website,
-        profileUrl,
-        followers,
-        following,
-        totalFollowers,
-        totalFollowing,
-        password,
-        otherUid,
-        email,
+    uid,
+    username,
+    name,
+    bio,
+    website,
+    email,
+    profileUrl,
+    followers,
+    following,
+    totalFollowers,
+    totalFollowing,
+    password,
+    otherUid,
     totalPosts,
-    imageFile,
-      ];
+    imageFile
+  ];
 }

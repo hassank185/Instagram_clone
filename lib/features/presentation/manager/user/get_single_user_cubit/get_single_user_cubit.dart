@@ -17,6 +17,7 @@ Future<void> getSingleUser({required String uid}) async{
   try{
     final streamResponse = getSingleUserUseCase.call(uid);
     streamResponse.listen((users) {
+      print(users.first);
       emit(GetSingleUserLoaded(user: users.first));
     });
   } on SocketException catch(_){

@@ -7,45 +7,45 @@ import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/user/
 
 
 part 'auth_state.dart';
-
 class AuthCubit extends Cubit<AuthState> {
-  final SignOutUseCase signOutUseCase;
   final IsSignInUseCase isSignInUseCase;
-  final GetCurrentUidUseCase getCurrentUidUseCase;
-  AuthCubit({required this.signOutUseCase, required this.isSignInUseCase, required this.getCurrentUidUseCase}) : super(AuthInitial());
+  final SignOutUseCase signOutUseCase;
+  final GetCurrentUidUseCase getCurrentUIDUseCase;
 
-  Future<void> appStarted(BuildContext context) async {
-    try {
-      print("appStarted");
-      bool isSignIn = await isSignInUseCase.call();
-      if (isSignIn == true) {
+  AuthCubit({required this.isSignInUseCase,required this.signOutUseCase,required this.getCurrentUIDUseCase}) : super(AuthInitial());
 
-        final uid = await getCurrentUidUseCase.call();
-        emit(Authenticated(uid: uid));
-      } else {
+  Future<void> appStarted()async{
+    try{
+      bool isSignIn=await isSignInUseCase.call();
+      print(isSignIn);
+      if (isSignIn==true){
+        final uid=await getCurrentUIDUseCase.call();
+
+        emit(Authenticated(uid:uid));
+      }else
         emit(UnAuthenticated());
-      }
-    } catch(_) {
+
+    }catch(_){
       emit(UnAuthenticated());
     }
   }
-
-  Future<void> loggedIn() async {
-    try {
-      final uid = await getCurrentUidUseCase.call();
-      print("user id $uid");
+  Future<void> loggedIn()async{
+    try{
+      final uid=await getCurrentUIDUseCase.call();
+      print("user Id $uid");
       emit(Authenticated(uid: uid));
-    } catch(_) {
+    }catch(_){
+      print("user Id null");
       emit(UnAuthenticated());
     }
   }
-
-  Future<void> loggedOut()async {
-    try {
+  Future<void> loggedOut()async{
+    try{
       await signOutUseCase.call();
       emit(UnAuthenticated());
-    } catch (_) {
+    }catch(_){
       emit(UnAuthenticated());
     }
   }
+
 }

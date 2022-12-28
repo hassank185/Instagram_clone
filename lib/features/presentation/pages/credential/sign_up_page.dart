@@ -1,3 +1,4 @@
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ import 'package:instagram_clone/features/presentation/widgets/button_container_w
 import 'package:instagram_clone/features/presentation/widgets/form_container_widget.dart';
 import 'package:instagram_clone/profile_widget.dart';
 import 'package:instagram_clone/theme/style.dart';
-
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
 
@@ -199,7 +199,7 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() {
       _isSigningUp = true;
     });
-    BlocProvider.of<CredentialCubit>(context).signUpUser(
+    BlocProvider.of<CredentialCubit>(context).signUpSubmit(
         user: UserEntity(
             email: _emailController.text,
             password: _passwordController.text,
@@ -212,7 +212,7 @@ class _SignUpPageState extends State<SignUpPage> {
             website: "",
             following: [],
             name: "",
-          imageFile: _image,
+            imageFile: _image
         )
     ).then((value) => _clear());
   }

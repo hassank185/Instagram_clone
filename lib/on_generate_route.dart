@@ -28,7 +28,7 @@ class OnGenerateRoute {
         return routeBuilder(CommentPage());
       }
       case PageConst.signInPage: {
-        return routeBuilder(LoginPage());
+        return routeBuilder(SignInPage());
       }
       case PageConst.signUpPage: {
         return routeBuilder(SignUpPage());

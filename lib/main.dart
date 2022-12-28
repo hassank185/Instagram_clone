@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(
-          create: (_) => di.sl<AuthCubit>()..appStarted(context),
+          create: (_) => di.sl<AuthCubit>()..appStarted(),
         ),
         BlocProvider<CredentialCubit>(
           create: (_) => di.sl<CredentialCubit>(),
@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
                     uid: authState.uid,
                   );
                 } else
-                  return LoginPage();
+                  return SignInPage();
               },
             );
           },

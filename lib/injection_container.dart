@@ -35,7 +35,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => AuthCubit(
       signOutUseCase: sl.call(),
-      getCurrentUidUseCase: sl.call(),
+      getCurrentUIDUseCase: sl.call(),
       isSignInUseCase: sl.call(),
     ),
   );
@@ -43,8 +43,7 @@ Future<void> init() async {
   sl.registerFactory(
     () => CredentialCubit(
       signUpUseCase: sl.call(),
-      signInUseCase: sl.call(),
-      createUserUseCase: sl.call(),
+      signInUseCase: sl.call(), createUserUseCase: sl.call(),
     ),
   );
 
@@ -97,14 +96,14 @@ Future<void> init() async {
 
   // Remote Data Source
   sl.registerLazySingleton<FirebaseRemoteDataSource>(
-      () => FirebaseRemoteDataSourceImpl(firebaseFirestore: sl.call(), auth: sl.call(), firebaseStorage: sl.call()));
+      () => FirebaseRemoteDataSourceImpl(firebaseFireStore: sl.call(), firebaseAuth: sl.call(), firebaseStorage: sl.call()));
 
   //1 Externals
 
-  final firebaseFirestore = FirebaseFirestore.instance;
+  final firebaseFireStore = FirebaseFirestore.instance;
   final firebaseAuth = FirebaseAuth.instance;
   final firebaseStorage = FirebaseStorage.instance;
   sl.registerLazySingleton(() => firebaseStorage);
-  sl.registerLazySingleton(() => firebaseFirestore);
+  sl.registerLazySingleton(() => firebaseFireStore);
   sl.registerLazySingleton(() => firebaseAuth);
 }

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagram_clone/features/domain/entities/user/user_entity.dart';
-
 class UserModel extends UserEntity {
   final String? uid;
   final String? username;
@@ -39,6 +38,8 @@ class UserModel extends UserEntity {
     following: following,
     bio: bio,
     name: name,
+    email: email,
+    totalPosts: totalPosts,
   );
 
   factory UserModel.fromSnapshot(DocumentSnapshot snap) {
