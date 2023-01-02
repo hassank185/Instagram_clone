@@ -8,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/consts.dart';
 import 'package:instagram_clone/features/domain/entities/user/user_entity.dart';
 import 'package:instagram_clone/features/presentation/manager/auth/auth_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/credential_cubit/credential_cubit.dart';
+import 'package:instagram_clone/features/presentation/manager/credentail/credential_cubit.dart';
 import 'package:instagram_clone/features/presentation/pages/main_screen/main_screen_page.dart';
 import 'package:instagram_clone/features/presentation/widgets/button_container_widget.dart';
 import 'package:instagram_clone/features/presentation/widgets/form_container_widget.dart';
@@ -199,7 +199,7 @@ class _SignUpPageState extends State<SignUpPage> {
     setState(() {
       _isSigningUp = true;
     });
-    BlocProvider.of<CredentialCubit>(context).signUpSubmit(
+    BlocProvider.of<CredentialCubit>(context).signUpUser(
         user: UserEntity(
             email: _emailController.text,
             password: _passwordController.text,

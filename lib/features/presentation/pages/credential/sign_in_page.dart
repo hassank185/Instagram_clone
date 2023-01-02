@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_clone/features/presentation/manager/auth/auth_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/credential_cubit/credential_cubit.dart';
+import 'package:instagram_clone/features/presentation/manager/credentail/credential_cubit.dart';
 import 'package:instagram_clone/features/presentation/pages/main_screen/main_screen_page.dart';
 import 'package:instagram_clone/features/presentation/widgets/button_container_widget.dart';
 import 'package:instagram_clone/features/presentation/widgets/form_container_widget.dart';
@@ -139,7 +139,7 @@ class _SignInPageState extends State<SignInPage> {
     setState(() {
       _isSigningIn = true;
     });
-    BlocProvider.of<CredentialCubit>(context).signInSubmit(
+    BlocProvider.of<CredentialCubit>(context).signInUser(
       email: _emailController.text,
       password: _passwordController.text,
     ).then((value) => _clear());

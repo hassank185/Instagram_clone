@@ -13,18 +13,17 @@ part 'post_state.dart';
 
 class PostCubit extends Cubit<PostState> {
   final CreatePostUseCase createPostUseCase;
-  final UpdatePostUseCase updatePostUseCase;
   final DeletePostUseCase deletePostUseCase;
-  final ReadPostUseCase readPostUseCase;
   final LikePostUseCase likePostUseCase;
-
-  PostCubit(
-      {required this.readPostUseCase,
-      required this.likePostUseCase,
-      required this.deletePostUseCase,
-      required this.updatePostUseCase,
-      required this.createPostUseCase})
-      : super(PostInitial());
+  final ReadPostUseCase readPostUseCase;
+  final UpdatePostUseCase updatePostUseCase;
+  PostCubit({
+    required this.updatePostUseCase,
+    required this.deletePostUseCase,
+    required this.likePostUseCase,
+    required this.createPostUseCase,
+    required this.readPostUseCase
+}) : super(PostInitial());
 
   Future<void> getPosts({required PostEntity post}) async {
     emit(PostLoading());
@@ -33,7 +32,7 @@ class PostCubit extends Cubit<PostState> {
       streamResponse.listen((posts) {
         emit(PostLoaded(posts: posts));
       });
-    } on SocketException catch (_) {
+    } on SocketException catch(_) {
       emit(PostFailure());
     } catch (_) {
       emit(PostFailure());
@@ -43,7 +42,7 @@ class PostCubit extends Cubit<PostState> {
   Future<void> likePost({required PostEntity post}) async {
     try {
       await likePostUseCase.call(post);
-    } on SocketException catch (_) {
+    } on SocketException catch(_) {
       emit(PostFailure());
     } catch (_) {
       emit(PostFailure());
@@ -53,7 +52,7 @@ class PostCubit extends Cubit<PostState> {
   Future<void> deletePost({required PostEntity post}) async {
     try {
       await deletePostUseCase.call(post);
-    } on SocketException catch (_) {
+    } on SocketException catch(_) {
       emit(PostFailure());
     } catch (_) {
       emit(PostFailure());
@@ -63,7 +62,7 @@ class PostCubit extends Cubit<PostState> {
   Future<void> createPost({required PostEntity post}) async {
     try {
       await createPostUseCase.call(post);
-    } on SocketException catch (_) {
+    } on SocketException catch(_) {
       emit(PostFailure());
     } catch (_) {
       emit(PostFailure());
@@ -73,7 +72,7 @@ class PostCubit extends Cubit<PostState> {
   Future<void> updatePost({required PostEntity post}) async {
     try {
       await updatePostUseCase.call(post);
-    } on SocketException catch (_) {
+    } on SocketException catch(_) {
       emit(PostFailure());
     } catch (_) {
       emit(PostFailure());

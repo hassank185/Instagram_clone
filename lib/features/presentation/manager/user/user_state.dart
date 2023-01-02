@@ -9,6 +9,12 @@ class UserInitial extends UserState {
   List<Object> get props => [];
 }
 
+class UserLoading extends UserState {
+  @override
+  List<Object> get props => [];
+}
+
+
 class UserLoaded extends UserState {
   final List<UserEntity> users;
 
@@ -17,10 +23,6 @@ class UserLoaded extends UserState {
   List<Object> get props => [users];
 }
 
-class UserLoading  extends UserState {
-  @override
-  List<Object> get props => [];
-}
 
 class UserFailure extends UserState {
   @override

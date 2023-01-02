@@ -1,60 +1,19 @@
-
-
-
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/consts.dart';
-import 'package:instagram_clone/features/presentation/pages/profile/widgets/profile_form_widget.dart';
-import 'package:instagram_clone/theme/style.dart';
-
-
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:instagram_clone/features/domain/entities/post/post_entity.dart';
+import 'package:instagram_clone/features/presentation/manager/post/post_cubit.dart';
+import 'package:instagram_clone/features/presentation/pages/post/widgets/update_post_main_widget.dart';
+import 'package:instagram_clone/injection_container.dart' as di;
 class UpdatePostPage extends StatelessWidget {
-  const UpdatePostPage({Key? key}) : super(key: key);
+  final PostEntity post;
+
+  const UpdatePostPage({Key? key, required this.post}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backGroundColor,
-      appBar: AppBar(
-        backgroundColor: backGroundColor,
-        title: Text("Edit Post"),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: Icon(Icons.done, color: blueColor, size: 28,),
-          )
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                    color: secondaryColor,
-                    shape: BoxShape.circle
-                ),
-              ),
-              sizeVer(10),
-              Text("Username", style: TextStyle(color: primaryColor, fontSize: 16, fontWeight: FontWeight.bold),),
-              sizeVer(10),
-              Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                    color: secondaryColor
-                ),
-              ),
-              sizeVer(10),
-              ProfileFormWidget(
-                title: "Description",
-              )
-            ],
-          ),
-        ),
-      ),
+    return BlocProvider(
+      create: (context) => di.sl<PostCubit>(),
+      child: UpdatePostMainWidget(post: post),
     );
   }
 }

@@ -101,21 +101,19 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<void> signInUser(UserEntity user)async {
-
-    await firebaseAuth.signInWithEmailAndPassword(email: user.email!, password: user.password!);
-    // try {
-    //   if (user.email!.isNotEmpty || user.password!.isNotEmpty) {
-    //     await firebaseAuth.signInWithEmailAndPassword(email: user.email!, password: user.password!);
-    //   } else {
-    //     print("fields cannot be empty");
-    //   }
-    // } on FirebaseAuthException catch (e) {
-    //   if (e.code == "user-not-found") {
-    //     toast("user not found");
-    //   } else if (e.code == "wrong-password") {
-    //     toast("Invalid email or password");
-    //   }
-    // }
+    try {
+      if (user.email!.isNotEmpty || user.password!.isNotEmpty) {
+        await firebaseAuth.signInWithEmailAndPassword(email: user.email!, password: user.password!);
+      } else {
+        print("fields cannot be empty");
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == "user-not-found") {
+        toast("user not found");
+      } else if (e.code == "wrong-password") {
+        toast("Invalid email or password");
+      }
+    }
   }
 
   @override
@@ -172,45 +170,46 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     userCollection.doc(user.uid).update(userInformation);
 
   }
-  @override
-  Future<String> uploadImageToCloudStorage(File? file, bool isPost, String? childName) async {
-    Reference ref = firebaseStorage.ref().child(childName!).child(firebaseAuth.currentUser!.uid);
 
-    if (isPost) {
-      String id = Uuid().v1();
-      ref = ref.child(id);
-    }
-
-    final uploadTask = ref.putFile(file!);
-    final imageUrl = (await uploadTask.whenComplete(() => {})).ref.getDownloadURL();
-    return await imageUrl;
-  }
 
   @override
   Future<void> createPost(PostEntity post) async {
     final postCollection = firebaseFireStore.collection(FirebaseConst.posts);
 
     final newPost = PostModel(
-      userProfileUrl: post.userProfileUrl,
-      username: post.username,
-      totalLikes: 0,
-      totalComments: 0,
-      postImageUrl: post.postImageUrl,
-      postId: post.postId,
-      description: post.description,
-      likes: [],
-      creatorUid: post.creatorUid,
-      createAt: post.createAt,
+        userProfileUrl: post.userProfileUrl,
+        username: post.username,
+        totalLikes: 0,
+        totalComments: 0,
+        postImageUrl: post.postImageUrl,
+        postId: post.postId,
+        likes: [],
+        description: post.description,
+        creatorUid: post.creatorUid,
+        createAt: post.createAt
     ).toJson();
+
     try {
+
       final postDocRef = await postCollection.doc(post.postId).get();
+
       if (!postDocRef.exists) {
-        postCollection.doc(post.postId).set(newPost);
+        postCollection.doc(post.postId).set(newPost).then((value) {
+          final userCollection = firebaseFireStore.collection(FirebaseConst.users).doc(post.creatorUid);
+
+          userCollection.get().then((value) {
+            if (value.exists) {
+              final totalPosts = value.get('totalPosts');
+              userCollection.update({"totalPosts": totalPosts + 1});
+              return;
+            }
+          });
+        });
       } else {
         postCollection.doc(post.postId).update(newPost);
       }
-    } catch (e) {
-      print("Some error occur");
+    }catch (e) {
+      print("some error occured $e");
     }
   }
 
@@ -219,9 +218,19 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     final postCollection = firebaseFireStore.collection(FirebaseConst.posts);
 
     try {
-      postCollection.doc(post.postId).delete();
+      postCollection.doc(post.postId).delete().then((value) {
+        final userCollection = firebaseFireStore.collection(FirebaseConst.users).doc(post.creatorUid);
+
+        userCollection.get().then((value) {
+          if (value.exists) {
+            final totalPosts = value.get('totalPosts');
+            userCollection.update({"totalPosts": totalPosts - 1});
+            return;
+          }
+        });
+      });
     } catch (e) {
-      print("some error occur");
+      print("some error occured $e");
     }
   }
 
@@ -247,6 +256,8 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
         });
       }
     }
+
+
   }
 
   @override
@@ -256,15 +267,37 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   }
 
   @override
+  Stream<List<PostEntity>> readSinglePost(String postId) {
+    final postCollection = firebaseFireStore.collection(FirebaseConst.posts).orderBy("createAt", descending: true).where("postId", isEqualTo: postId);
+    return postCollection.snapshots().map((querySnapshot) => querySnapshot.docs.map((e) => PostModel.fromSnapshot(e)).toList());
+  }
+
+  @override
   Future<void> updatePost(PostEntity post) async {
     final postCollection = firebaseFireStore.collection(FirebaseConst.posts);
     Map<String, dynamic> postInfo = Map();
 
-    if (post.description == "" && post.description != null) postInfo['description'] = post.description;
-    if (post.postImageUrl == "" && post.postImageUrl != null) postInfo['postImageUrl'] = post.postImageUrl;
+    if (post.description != "" && post.description != null) postInfo['description'] = post.description;
+    if (post.postImageUrl != "" && post.postImageUrl != null) postInfo['postImageUrl'] = post.postImageUrl;
 
     postCollection.doc(post.postId).update(postInfo);
   }
 
+  @override
+  Future<String> uploadImageToCloudStorage(File? file, bool isPost, String childName) async{
+
+    Reference ref = firebaseStorage.ref().child(childName).child(firebaseAuth.currentUser!.uid);
+
+    if (isPost) {
+      String id = Uuid().v1();
+      ref = ref.child(id);
+    }
+
+    final uploadTask = ref.putFile(file!);
+
+    final imageUrl = (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
+
+    return await imageUrl;
+  }
 
 }

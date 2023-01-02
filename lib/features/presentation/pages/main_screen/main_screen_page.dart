@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
-import 'package:instagram_clone/features/presentation/manager/user/get_single_user_cubit/get_single_user_cubit.dart';
+import 'package:instagram_clone/features/presentation/manager/user/get_single_user/get_single_user_cubit.dart';
 import 'package:instagram_clone/features/presentation/pages/activity/avtivity_page.dart';
 import 'package:instagram_clone/features/presentation/pages/home/home_page.dart';
 import 'package:instagram_clone/features/presentation/pages/post/upload_post_page.dart';

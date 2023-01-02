@@ -39,7 +39,7 @@ class FirebaseRepositoryImpl implements FirebaseRepository{
   Future<void> updateUser(UserEntity user) async => remoteDataSource.updateUser(user);
 
   @override
-  Future<String> uploadImageToCloudStorage(File? file, bool? isPost, String? childName) async =>
+  Future<String> uploadImageToCloudStorage(File? file, bool? isPost, String childName) async =>
       remoteDataSource.uploadImageToCloudStorage(file, isPost!, childName);
 
   @override
@@ -56,5 +56,8 @@ class FirebaseRepositoryImpl implements FirebaseRepository{
 
   @override
   Future<void> updatePost(PostEntity post) async => remoteDataSource.updatePost(post);
+
+  @override
+  Stream<List<PostEntity>> readSinglePost(String postId) => remoteDataSource.readSinglePost(postId);
 
 }

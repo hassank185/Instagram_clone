@@ -12,6 +12,7 @@ import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/post/
 import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/post/delete_post_usecase.dart';
 import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/post/like_post_usecase.dart';
 import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/post/read_post_usecase.dart';
+import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/post/read_single_post_usecase.dart';
 import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/post/update_post_usecase.dart';
 import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/user/create_user_usecase.dart';
 import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/user/get_current_uid_usecase.dart';
@@ -23,9 +24,9 @@ import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/user/
 import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/user/sign_up_usecase.dart';
 import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/user/update_user_usecase.dart';
 import 'package:instagram_clone/features/presentation/manager/auth/auth_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/credential_cubit/credential_cubit.dart';
+import 'package:instagram_clone/features/presentation/manager/credentail/credential_cubit.dart';
 import 'package:instagram_clone/features/presentation/manager/post/post_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/user/get_single_user_cubit/get_single_user_cubit.dart';
+import 'package:instagram_clone/features/presentation/manager/user/get_single_user/get_single_user_cubit.dart';
 import 'package:instagram_clone/features/presentation/manager/user/user_cubit.dart';
 
 final sl = GetIt.instance;
@@ -35,22 +36,21 @@ Future<void> init() async {
   sl.registerFactory(
     () => AuthCubit(
       signOutUseCase: sl.call(),
-      getCurrentUIDUseCase: sl.call(),
-      isSignInUseCase: sl.call(),
+      isSignInUseCase: sl.call(), getCurrentUidUseCase: sl.call(),
     ),
   );
 
   sl.registerFactory(
     () => CredentialCubit(
       signUpUseCase: sl.call(),
-      signInUseCase: sl.call(), createUserUseCase: sl.call(),
+      signInUserUseCase: sl.call(),
     ),
   );
 
   sl.registerFactory(
     () => UserCubit(
       updateUserUseCase: sl.call(),
-      getUserUseCase: sl.call(),
+      getUsersUseCase: sl.call(),
     ),
   );
 
@@ -88,6 +88,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdatePostUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => LikePostUseCase(repository: sl.call()));
   sl.registerLazySingleton(() => DeletePostUseCase(repository: sl.call()));
+  sl.registerLazySingleton(() => ReadSinglePostUseCase(repository: sl.call()));
 
 
   // Repository

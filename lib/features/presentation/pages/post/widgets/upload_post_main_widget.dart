@@ -1,7 +1,4 @@
-
-
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,7 +88,7 @@ class _UploadPostPageState extends State<UploadPostMainWidget> {
               child: profileWidget(image: _image),
             ),
             sizeVer(10),
-            ProfileFormWidget(title: "Description"),
+            ProfileFormWidget(title: "Description",controller: _descriptionController,),
             sizeVer(10),
             _uploading == true? Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -126,7 +123,8 @@ class _UploadPostPageState extends State<UploadPostMainWidget> {
         postImageUrl: image,
         totalComments: 0,
         totalLikes: 0,
-        username: widget.currentUser.username
+        username: widget.currentUser.username,
+      userProfileUrl: widget.currentUser.profileUrl,
     )).then((value) => _clear());
   }
 

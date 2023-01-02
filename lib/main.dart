@@ -3,9 +3,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:instagram_clone/features/presentation/manager/auth/auth_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/credential_cubit/credential_cubit.dart';
+import 'package:instagram_clone/features/presentation/manager/credentail/credential_cubit.dart';
 import 'package:instagram_clone/features/presentation/manager/post/post_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/user/get_single_user_cubit/get_single_user_cubit.dart';
+import 'package:instagram_clone/features/presentation/manager/user/get_single_user/get_single_user_cubit.dart';
 import 'package:instagram_clone/features/presentation/manager/user/user_cubit.dart';
 import 'package:instagram_clone/features/presentation/pages/credential/sign_in_page.dart';
 import 'package:instagram_clone/features/presentation/pages/main_screen/main_screen_page.dart';
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthCubit>(
-          create: (_) => di.sl<AuthCubit>()..appStarted(),
+          create: (_) => di.sl<AuthCubit>()..appStarted(context),
         ),
         BlocProvider<CredentialCubit>(
           create: (_) => di.sl<CredentialCubit>(),

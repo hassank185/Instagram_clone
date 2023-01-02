@@ -26,3 +26,5 @@ class PostFailure extends PostState {
   @override
   List<Object> get props => [];
 }
+
+

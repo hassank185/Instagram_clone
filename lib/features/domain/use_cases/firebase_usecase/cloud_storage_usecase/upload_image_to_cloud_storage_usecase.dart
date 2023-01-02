@@ -11,7 +11,7 @@ class UploadImageToCloudStorage{
   final FirebaseRepository repository;
 
   UploadImageToCloudStorage({required this.repository});
-  Future<String> call(File? file,bool? isPost, String? childName) {
+  Future<String> call(File? file,bool? isPost, String childName) {
     return repository.uploadImageToCloudStorage(file,isPost,childName);
   }
 }

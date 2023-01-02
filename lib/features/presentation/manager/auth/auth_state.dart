@@ -1,6 +1,5 @@
 part of 'auth_cubit.dart';
 
-
 abstract class AuthState extends Equatable {
   const AuthState();
 }
@@ -15,12 +14,11 @@ class Authenticated extends AuthState {
 
   Authenticated({required this.uid});
   @override
-  List<Object> get props => [];
+  List<Object> get props => [uid];
 }
 
 class UnAuthenticated extends AuthState {
   @override
   List<Object> get props => [];
 }
-
 
