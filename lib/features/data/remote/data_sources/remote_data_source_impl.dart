@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:instagram_clone/consts.dart';
 import 'package:instagram_clone/features/data/remote/data_sources/remote_data_source.dart';
+import 'package:instagram_clone/features/data/remote/models/comment/comment_model.dart';
 import 'package:instagram_clone/features/data/remote/models/post/post_model.dart';
 import 'package:instagram_clone/features/data/remote/models/user/user_model.dart';
+import 'package:instagram_clone/features/domain/entities/comment/comment_entity.dart';
 import 'package:instagram_clone/features/domain/entities/post/post_entity.dart';
 import 'package:instagram_clone/features/domain/entities/user/user_entity.dart';
 import 'package:uuid/uuid.dart';
@@ -24,19 +26,19 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
     userCollection.doc(uid).get().then((userDoc) {
       final newUser = UserModel(
-          uid: uid,
-          name: user.name,
-          email: user.email,
-          bio: user.bio,
-          following: user.following,
-          website: user.website,
-          profileUrl: profileUrl,
-          username: user.username,
-          totalFollowers: user.totalFollowers,
-          followers: user.followers,
-          totalFollowing: user.totalFollowing,
-          totalPosts: user.totalPosts
-      ).toJson();
+              uid: uid,
+              name: user.name,
+              email: user.email,
+              bio: user.bio,
+              following: user.following,
+              website: user.website,
+              profileUrl: profileUrl,
+              username: user.username,
+              totalFollowers: user.totalFollowers,
+              followers: user.followers,
+              totalFollowing: user.totalFollowing,
+              totalPosts: user.totalPosts)
+          .toJson();
 
       if (!userDoc.exists) {
         userCollection.doc(uid).set(newUser);
@@ -56,19 +58,19 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
     userCollection.doc(uid).get().then((userDoc) {
       final newUser = UserModel(
-          uid: uid,
-          name: user.name,
-          email: user.email,
-          bio: user.bio,
-          following: user.following,
-          website: user.website,
-          profileUrl: user.profileUrl,
-          username: user.username,
-          totalFollowers: user.totalFollowers,
-          followers: user.followers,
-          totalFollowing: user.totalFollowing,
-          totalPosts: user.totalPosts
-      ).toJson();
+              uid: uid,
+              name: user.name,
+              email: user.email,
+              bio: user.bio,
+              following: user.following,
+              website: user.website,
+              profileUrl: user.profileUrl,
+              username: user.username,
+              totalFollowers: user.totalFollowers,
+              followers: user.followers,
+              totalFollowing: user.totalFollowing,
+              totalPosts: user.totalPosts)
+          .toJson();
 
       if (!userDoc.exists) {
         userCollection.doc(uid).set(newUser);
@@ -82,7 +84,6 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
   @override
   Future<String> getCurrentUid() async => firebaseAuth.currentUser!.uid;
-
 
   @override
   Stream<List<UserEntity>> getSingleUsers(String uid) {
@@ -100,7 +101,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   Future<bool> isSignIn() async => firebaseAuth.currentUser?.uid != null;
 
   @override
-  Future<void> signInUser(UserEntity user)async {
+  Future<void> signInUser(UserEntity user) async {
     try {
       if (user.email!.isNotEmpty || user.password!.isNotEmpty) {
         await firebaseAuth.signInWithEmailAndPassword(email: user.email!, password: user.password!);
@@ -124,7 +125,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   @override
   Future<void> signUpUser(UserEntity user) async {
     try {
-      await firebaseAuth.createUserWithEmailAndPassword(email: user.email!, password: user.password!).then((currentUser) async{
+      await firebaseAuth.createUserWithEmailAndPassword(email: user.email!, password: user.password!).then((currentUser) async {
         if (currentUser.user?.uid != null) {
           if (user.imageFile != null) {
             uploadImageToCloudStorage(user.imageFile, false, "profileImages").then((profileUrl) {
@@ -166,31 +167,27 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
 
     if (user.totalPosts != null) userInformation['totalPosts'] = user.totalPosts;
 
-
     userCollection.doc(user.uid).update(userInformation);
-
   }
-
 
   @override
   Future<void> createPost(PostEntity post) async {
     final postCollection = firebaseFireStore.collection(FirebaseConst.posts);
 
     final newPost = PostModel(
-        userProfileUrl: post.userProfileUrl,
-        username: post.username,
-        totalLikes: 0,
-        totalComments: 0,
-        postImageUrl: post.postImageUrl,
-        postId: post.postId,
-        likes: [],
-        description: post.description,
-        creatorUid: post.creatorUid,
-        createAt: post.createAt
-    ).toJson();
+            userProfileUrl: post.userProfileUrl,
+            username: post.username,
+            totalLikes: 0,
+            totalComments: 0,
+            postImageUrl: post.postImageUrl,
+            postId: post.postId,
+            likes: [],
+            description: post.description,
+            creatorUid: post.creatorUid,
+            createAt: post.createAt)
+        .toJson();
 
     try {
-
       final postDocRef = await postCollection.doc(post.postId).get();
 
       if (!postDocRef.exists) {
@@ -208,7 +205,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
       } else {
         postCollection.doc(post.postId).update(newPost);
       }
-    }catch (e) {
+    } catch (e) {
       print("some error occured $e");
     }
   }
@@ -256,8 +253,6 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
         });
       }
     }
-
-
   }
 
   @override
@@ -284,8 +279,7 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
   }
 
   @override
-  Future<String> uploadImageToCloudStorage(File? file, bool isPost, String childName) async{
-
+  Future<String> uploadImageToCloudStorage(File? file, bool isPost, String childName) async {
     Reference ref = firebaseStorage.ref().child(childName).child(firebaseAuth.currentUser!.uid);
 
     if (isPost) {
@@ -300,4 +294,101 @@ class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
     return await imageUrl;
   }
 
+  @override
+  Future<void> createComment(CommentEntity comment) async {
+    final commentCollection = firebaseFireStore.collection(FirebaseConst.posts).doc(comment.commentId).collection(FirebaseConst.comment);
+
+    final newComment = CommentModel(
+            userProfileUrl: comment.userProfileUrl,
+            username: comment.username,
+            commentId: comment.commentId,
+            totalReplays: comment.totalReplays,
+            postId: comment.postId,
+            likes: [],
+            description: comment.description,
+            creatorUid: comment.creatorUid,
+            createAt: comment.createAt)
+        .toJson();
+
+    try {
+      final commentDocRef = await commentCollection.doc(comment.commentId).get();
+
+      if (!commentDocRef.exists) {
+        commentCollection.doc(comment.commentId).set(newComment).then((value) {
+          final postCollection = firebaseFireStore.collection(FirebaseConst.posts).doc(comment.postId);
+          postCollection.get().then((value) {
+            if (value.exists) {
+              final totalComments = value.get('totalComments');
+              postCollection.update({"totalComments": totalComments + 1});
+              return;
+            }
+          });
+        });
+      } else {
+        commentCollection.doc(comment.commentId).update(newComment);
+      }
+    } catch (e) {
+      print("some error occur$e");
+    }
+  }
+
+  @override
+  Future<void> deleteComment(CommentEntity comment) async {
+    final commentCollection = firebaseFireStore.collection(FirebaseConst.posts).doc(comment.commentId).collection(FirebaseConst.comment);
+
+    try {
+      commentCollection.doc(comment.commentId).delete().then((value) {
+        final postCollection = firebaseFireStore.collection(FirebaseConst.posts).doc(comment.postId);
+        postCollection.get().then((value) {
+          if (value.exists) {
+            final totalComments = value.get('totalComments');
+            postCollection.update({"totalComments": totalComments - 1});
+            return;
+          }
+        });
+      });
+    } catch (e) {
+      print("some error occur$e");
+    }
+  }
+
+  @override
+  Future<void> likeComment(CommentEntity comment) async {
+    final commentCollection = firebaseFireStore.collection(FirebaseConst.posts).doc(comment.commentId).collection(FirebaseConst.comment);
+    final currentUid = await getCurrentUid();
+
+    final commentRef = await commentCollection.doc(comment.commentId).get();
+
+    if(commentRef.exists){
+      List likes = commentRef.get("likes");
+      if(likes.contains(currentUid)){
+        commentCollection.doc(comment.commentId).update({
+          "likes": FieldValue.arrayRemove([likes])
+        });
+      }else {
+        commentCollection.doc(comment.commentId).update({
+          "likes": FieldValue.arrayUnion([likes])
+        });
+      }
+    }
+
+  }
+
+  @override
+  Stream<List<CommentEntity>> readComment(String postId) {
+    final commentCollection = firebaseFireStore.collection(FirebaseConst.posts).doc(postId).collection(FirebaseConst.comment);
+    
+    return commentCollection.snapshots().map((querySnapshot) => querySnapshot.docs.map((e) => CommentModel.fromSnapshot(e)).toList());
+    
+  }
+
+  @override
+  Future<void> updateComment(CommentEntity comment) async{
+    final commentCollection = firebaseFireStore.collection(FirebaseConst.posts).doc(comment.postId).collection(FirebaseConst.comment);
+
+    Map<String, dynamic> commentInfo = Map();
+
+    if(comment.description!= "" && comment.description != null) commentInfo['description'] = comment.description;
+    commentCollection.doc(comment.commentId).update(commentInfo);
+  }
 }

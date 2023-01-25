@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:instagram_clone/features/data/remote/data_sources/remote_data_source.dart';
+import 'package:instagram_clone/features/domain/entities/comment/comment_entity.dart';
 import 'package:instagram_clone/features/domain/entities/post/post_entity.dart';
 import 'package:instagram_clone/features/domain/entities/user/user_entity.dart';
 import 'package:instagram_clone/features/domain/repositories/firebase_repository.dart';
@@ -59,5 +60,21 @@ class FirebaseRepositoryImpl implements FirebaseRepository{
 
   @override
   Stream<List<PostEntity>> readSinglePost(String postId) => remoteDataSource.readSinglePost(postId);
+
+  @override
+  Future<void> createComment(CommentEntity comment)async => remoteDataSource.createComment(comment);
+
+
+  @override
+  Future<void> deleteComment(CommentEntity comment) async => remoteDataSource.deleteComment(comment);
+
+  @override
+  Future<void> likeComment(CommentEntity comment) async => remoteDataSource.likeComment(comment);
+
+  @override
+  Stream<List<CommentEntity>> readComment(String postId)  => remoteDataSource.readComment(postId);
+
+  @override
+  Future<void> updateComment(CommentEntity comment) async => remoteDataSource.updateComment(comment);
 
 }

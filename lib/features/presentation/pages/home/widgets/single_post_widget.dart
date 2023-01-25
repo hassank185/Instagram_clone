@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:instagram_clone/consts.dart';
 import 'package:instagram_clone/features/domain/entities/post/post_entity.dart';
+import 'package:instagram_clone/features/domain/entities/user/app_entity.dart';
 import 'package:instagram_clone/features/domain/use_cases/firebase_usecase/user/get_current_uid_usecase.dart';
 import 'package:instagram_clone/features/presentation/manager/post/post_cubit.dart';
 import 'package:instagram_clone/features/presentation/pages/post/comment/comment_page.dart';
@@ -103,11 +104,13 @@ class _SinglePostCardWidgetState extends State<SinglePostCardWidget> {
             children: [
               Row(
                 children: [
-                  Icon(
+                  GestureDetector(
+                    onTap: _likePost,
+                  child: Icon(
                     widget.post.likes!.contains(_currentUid)?Icons.favorite: Icons.favorite_outline, color: widget.post.likes!.contains(_currentUid)?Colors.red : primaryColor,
-                  ),
+                  ),),
                   sizeHor(10), GestureDetector(
-                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CommentPage())),
+                    onTap: () => Navigator.pushNamed(context, PageConst.commentPage,arguments: AppEntity(uid: _currentUid,postId: widget.post.postId )),
                     child: Icon(
                       Feather.message_circle, color: primaryColor,
                     ),
