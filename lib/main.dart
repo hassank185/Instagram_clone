@@ -1,15 +1,13 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:instagram_clone/features/presentation/manager/auth/auth_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/credentail/credential_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/post/post_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/user/get_single_user/get_single_user_cubit.dart';
-import 'package:instagram_clone/features/presentation/manager/user/user_cubit.dart';
-import 'package:instagram_clone/features/presentation/pages/credential/sign_in_page.dart';
-import 'package:instagram_clone/features/presentation/pages/main_screen/main_screen_page.dart';
-
+import 'features/presentation/cubit/auth/auth_cubit.dart';
+import 'features/presentation/cubit/credentail/credential_cubit.dart';
+import 'features/presentation/cubit/user/get_single_other_user/get_single_other_user_cubit.dart';
+import 'features/presentation/cubit/user/get_single_user/get_single_user_cubit.dart';
+import 'features/presentation/cubit/user/user_cubit.dart';
+import 'features/presentation/page/credential/sign_in_page.dart';
+import 'features/presentation/page/main_screen/main_screen.dart';
 import 'on_generate_route.dart';
 import 'injection_container.dart' as di;
 
@@ -27,43 +25,35 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthCubit>(
-          create: (_) => di.sl<AuthCubit>()..appStarted(context),
-        ),
-        BlocProvider<CredentialCubit>(
-          create: (_) => di.sl<CredentialCubit>(),
-        ),
-        BlocProvider<UserCubit>(
-          create: (_) => di.sl<UserCubit>(),
-        ),
-        BlocProvider<GetSingleUserCubit>(
-          create: (_) => di.sl<GetSingleUserCubit>(),
-        ),
-        BlocProvider<PostCubit>(
-            create: (_) => di.sl<PostCubit>()),
+        BlocProvider(create: (_) => di.sl<AuthCubit>()..appStarted(context)),
+        BlocProvider(create: (_) => di.sl<CredentialCubit>()),
+        BlocProvider(create: (_) => di.sl<UserCubit>()),
+        BlocProvider(create: (_) => di.sl<GetSingleUserCubit>()),
+        BlocProvider(create: (_) => di.sl<GetSingleOtherUserCubit>()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "Instagram Clone",
-        onGenerateRoute: OnGenerateRoute.route,
         darkTheme: ThemeData.dark(),
+        onGenerateRoute: OnGenerateRoute.route,
         initialRoute: "/",
         routes: {
           "/": (context) {
             return BlocBuilder<AuthCubit, AuthState>(
               builder: (context, authState) {
                 if (authState is Authenticated) {
-                  print("uid ${authState.uid}");
-                  return MainScreen(
-                    uid: authState.uid,
-                  );
-                } else
+                  return MainScreen(uid: authState.uid,);
+
+                } else {
                   return SignInPage();
+                }
               },
             );
-          },
+          }
         },
       ),
     );
   }
 }
+
+

@@ -1,9 +1,7 @@
 
-
-
-
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/theme/style.dart';
+import '../../../consts.dart';
+
 
 class ButtonContainerWidget extends StatelessWidget {
   final Color? color;

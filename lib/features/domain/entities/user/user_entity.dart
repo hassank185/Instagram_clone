@@ -1,6 +1,7 @@
-import 'package:equatable/equatable.dart';
+
 import 'dart:io';
 
+import 'package:equatable/equatable.dart';
 
 class UserEntity extends Equatable {
   final String? uid;
